@@ -1,0 +1,78 @@
+import io.swagger.annotations.*;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * @author franyang
+ * @date 2018/10/9
+ */
+@RestController
+@RequestMapping("/test")
+@Api(description = "测试用控制器")
+public class TestController {
+
+
+    @GetMapping("/{test}")
+    @ApiOperation(value = "测试地址传入")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "test",value = "地址传参",defaultValue = "frank",required = true,paramType = "path")
+    )
+    public TestResp test(@PathVariable("test")String test){
+        TestResp testResp = new TestResp();
+        testResp.setName(test);
+        testResp.setDate(new Date());
+        return testResp;
+    }
+
+    @GetMapping("/1")
+    @ApiOperation(value = "测试form表单传入")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "name",value = "名称",defaultValue = "frank",required = true,paramType = "query"),
+                    @ApiImplicitParam(name = "value",value = "值",defaultValue = "value",required = false,paramType = "query"),
+                    @ApiImplicitParam(name = "date",value = "时间",defaultValue = "2018-09-09 11:11:11",required = false,paramType = "query",dataType = "date")}
+    )
+    public TestResp test1(@RequestParam("name") String name,@RequestParam(name = "value") String value,@RequestParam(name = "date")String date) throws ParseException {
+        TestResp testResp = new TestResp();
+        testResp.setName(name);
+        testResp.setValue(value);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        testResp.setDate(sdf.parse(date));
+        return testResp;
+    }
+
+
+    @PostMapping("/2")
+    @ApiOperation(value = "测试form表单传入")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "name",value = "名称",defaultValue = "frank",required = true,paramType = "form"),
+            @ApiImplicitParam(name = "value",value = "值",defaultValue = "value",required = false,paramType = "form")}
+    )
+    public TestResp test2(@RequestParam(name = "name",value = "name") String name,@RequestParam(name = "value",value = "value") String value){
+        TestResp testResp = new TestResp();
+        testResp.setName(name);
+        testResp.setValue(value);
+        return testResp;
+    }
+
+
+    @PostMapping("/3")
+    @ApiOperation(value = "测试对象传入")
+    public TestResp test3(@RequestBody TestReq req){
+        TestResp testResp = new TestResp();
+        BeanUtils.copyProperties(req,testResp);
+        return testResp;
+    }
+
+
+    @DeleteMapping("/4")
+    @ApiOperation(value = "删除测试")
+    public TestResp test4(@RequestBody TestReq req){
+        TestResp testResp = new TestResp();
+        BeanUtils.copyProperties(req,testResp);
+        return testResp;
+    }
+}
