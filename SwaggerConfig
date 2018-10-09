@@ -1,0 +1,45 @@
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * SwaggerConfig
+ * 可视化调试界面:http://ip:host/swagger-ui.html
+ */
+@Configuration
+@EnableSwagger2
+@ConditionalOnExpression("${swagger.enable}")
+public class SwaggerConfig {
+    @Value("${spring.application.name}")
+    private String applicationName;
+
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2).groupName(applicationName)
+                       .apiInfo(apiInfo())
+                       .select()
+                       .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+                       .build();
+    }
+
+    private ApiInfo apiInfo() {
+        ApiInfo apiInfo = new ApiInfo("big title",//大标题
+                                             "litle title",//小标题
+                                             "1.0",//版本
+                                             "",//无服务条款
+                                             new Contact("", "", ""),//作者
+                                             "",//链接显示文字
+                                             ""//网站链接
+        );
+        return apiInfo;
+    }
+
+}
